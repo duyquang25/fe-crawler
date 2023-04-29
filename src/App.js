@@ -23,7 +23,7 @@ function App() {
   const [bestAskETHBTC, setbestAskETHBTC] = useState('');
   const [bestBidETHUSDT, setbestBidETHUSDT] = useState('');
   const [bestAskETHUSDT, setbestAskETHUSDT] = useState('');
-  const [profitRate, setprofitRate] = useState('');
+  const [profitRate, setprofitRate] = useState([]);
   const [data, setData] = useState('');
 
   const socketRef = useRef();
@@ -33,6 +33,7 @@ function App() {
       const result = await axios.get(endPointApi);
       console.log('...', result.data.data);
       setData(result.data.data);
+      setprofitRate(result.data.data.logs);
     };
 
     fetchData();
@@ -63,7 +64,11 @@ function App() {
     });
 
     socketRef.current.on(SOCKET_EVENT.PROFIT_RATE, (data) => {
-      setprofitRate(data);
+      console.log(data);
+      setprofitRate((prevProfitRate) => {
+        const newProfitRate = [data, ...prevProfitRate];
+        return newProfitRate.slice(0, 10); // Giới hạn mảng mới chỉ có 10 phần tử
+      });
     });
 
     return () => {
@@ -93,9 +98,36 @@ function App() {
         <br />
         <br />
         <h1>Detect triangle arbitrage opportunities - Logs</h1>
-        <div> PROFIT:: {profitRate}</div>
+        <dir>
+          {profitRate?.map((item, index) => (
+            <div key={index}>{item}</div>
+          ))}
+        </dir>
+
+        <ul>
+          {/* {data.logs?.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))} */}
+        </ul>
       </div>
     </div>
+    // <div class="triangle">
+    //   <div class="usdt">USDT</div>
+    //   <div class="btc">BTC</div>
+    //   <div class="eth">ETH</div>
+    //   <div class="currency1">
+    //     <span>$1000</span>
+    //   </div>
+    //   <div class="currency2">
+    //     <span>$2000</span>
+    //   </div>
+    //   <div class="vector1"></div>
+    //   <div class="vector2"></div>
+    //   <div class="vector3"></div>
+    //   <div class="vector4"></div>
+    //   <div class="vector5"></div>
+    //   <div class="vector6"></div>
+    // </div>
   );
 }
 
