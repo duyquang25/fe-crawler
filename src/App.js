@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import socketIOClient from 'socket.io-client';
+import axios from 'axios';
 import './App.css';
+
 const host = 'http://localhost:9000';
+const endPointApi = 'http://localhost:9000/api/v1/profit-log';
 
 const SOCKET_EVENT = {
   BID_BTCUSDT: 'bid-btcusdt',
@@ -14,8 +17,6 @@ const SOCKET_EVENT = {
 };
 
 function App() {
-  // const [mess, setMess] = useState([]);
-  // const [message, setMessage] = useState('');
   const [bestBidBTCUSDT, setbestBidBTCUSDT] = useState('');
   const [bestAskBTCUSDT, setbestAskBTCUSDT] = useState('');
   const [bestBidETHBTC, setbestBidETHBTC] = useState('');
@@ -23,42 +24,45 @@ function App() {
   const [bestBidETHUSDT, setbestBidETHUSDT] = useState('');
   const [bestAskETHUSDT, setbestAskETHUSDT] = useState('');
   const [profitRate, setprofitRate] = useState('');
+  const [data, setData] = useState('');
 
   const socketRef = useRef();
-  // const messagesEnd = useRef();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios.get(endPointApi);
+      console.log('...', result.data.data);
+      setData(result.data.data);
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     socketRef.current = socketIOClient.connect(host);
 
     socketRef.current.on(SOCKET_EVENT.BID_BTCUSDT, (data) => {
-      console.log(data);
       setbestBidBTCUSDT(data);
     });
     socketRef.current.on(SOCKET_EVENT.ASK_BTCUSDT, (data) => {
-      console.log(data);
       setbestAskBTCUSDT(data);
     });
 
     socketRef.current.on(SOCKET_EVENT.BID_ETHBTC, (data) => {
-      console.log(data);
       setbestBidETHBTC(data);
     });
     socketRef.current.on(SOCKET_EVENT.ASK_ETHBTC, (data) => {
-      console.log(data);
       setbestAskETHBTC(data);
     });
 
     socketRef.current.on(SOCKET_EVENT.BID_ETHUSDT, (data) => {
-      console.log(data);
       setbestBidETHUSDT(data);
     });
     socketRef.current.on(SOCKET_EVENT.ASK_ETHUSDT, (data) => {
-      console.log(data);
       setbestAskETHUSDT(data);
     });
 
     socketRef.current.on(SOCKET_EVENT.PROFIT_RATE, (data) => {
-      console.log(data);
       setprofitRate(data);
     });
 
@@ -70,26 +74,25 @@ function App() {
   return (
     <div class="box-chat">
       <div class="send-box">
-        <div> bestBidBTCUSDT:: {bestBidBTCUSDT}</div>
+        <div> bestBidBTCUSDT:: {bestBidBTCUSDT ? bestBidBTCUSDT : data.rateBidBTCUSDT}</div>
         <br />
         <br />
-        <div> bestAskBTCUSDT:: {bestAskBTCUSDT}</div>
+        <div> bestAskBTCUSDT:: {bestAskBTCUSDT ? bestAskBTCUSDT : data.rateAskETHBTC}</div>
         <br />
         <br />
-        <div> bestBidETHBTC:: {bestBidETHBTC}</div>
+        <div> bestBidETHBTC:: {bestBidETHBTC ? bestBidETHBTC : data.rateBidETHBTC}</div>
         <br />
         <br />
-        <div> bestAskETHBTC:: {bestAskETHBTC}</div>
+        <div> bestAskETHBTC:: {bestAskETHBTC ? bestAskETHBTC : data.rateAskETHBTC} </div>
         <br />
         <br />
-        <div> bestBidETHUSDT:: {bestBidETHUSDT}</div>
+        <div> bestBidETHUSDT:: {bestBidETHUSDT ? bestBidETHUSDT : data.rateBidETHUSDT}</div>
         <br />
         <br />
-        <div> bestAskETHUSDT:: {bestAskETHUSDT}</div>
-
+        <div> bestAskETHUSDT:: {bestAskETHUSDT ? bestAskETHUSDT : data.rateAskETHUSDT}</div>
         <br />
         <br />
-        <h1>Detect triangle arbitrage opportunities - Logs profit: </h1>
+        <h1>Detect triangle arbitrage opportunities - Logs</h1>
         <div> PROFIT:: {profitRate}</div>
       </div>
     </div>
