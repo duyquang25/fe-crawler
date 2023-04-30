@@ -2,9 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import socketIOClient from 'socket.io-client';
 import axios from 'axios';
 import './App.css';
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
 
-const host = 'http://localhost:9000';
-const endPointApi = 'http://localhost:9000/api/v1/profit-log';
+const host = 'http://13.215.193.102:9000';
+const endPointApi = 'http://13.215.193.102:9000/api/v1/profit-log';
 
 const SOCKET_EVENT = {
   BID_BTCUSDT: 'bid-btcusdt',
@@ -24,15 +30,28 @@ function App() {
   const [bestBidETHUSDT, setbestBidETHUSDT] = useState('');
   const [bestAskETHUSDT, setbestAskETHUSDT] = useState('');
   const [profitRate, setprofitRate] = useState([]);
-  const [data, setData] = useState('');
 
   const socketRef = useRef();
+
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get(endPointApi);
       console.log('...', result.data.data);
-      setData(result.data.data);
+      setbestBidBTCUSDT(result.data.data.rateBidBTCUSDT);
+      setbestAskBTCUSDT(result.data.data.rateAskBTCUSDT);
+      setbestBidETHBTC(result.data.data.rateBidETHBTC);
+      setbestAskETHBTC(result.data.data.rateAskETHBTC);
+      setbestBidETHUSDT(result.data.data.rateBidETHUSDT);
+      setbestAskETHUSDT(result.data.data.rateAskETHUSDT);
       setprofitRate(result.data.data.logs);
     };
 
@@ -67,7 +86,7 @@ function App() {
       console.log(data);
       setprofitRate((prevProfitRate) => {
         const newProfitRate = [data, ...prevProfitRate];
-        return newProfitRate.slice(0, 10); // Giới hạn mảng mới chỉ có 10 phần tử
+        return newProfitRate.slice(0, 10); // Select 10 element
       });
     });
 
@@ -76,58 +95,73 @@ function App() {
     };
   }, []);
 
-  return (
-    <div class="box-chat">
-      <div class="send-box">
-        <div> bestBidBTCUSDT:: {bestBidBTCUSDT ? bestBidBTCUSDT : data.rateBidBTCUSDT}</div>
-        <br />
-        <br />
-        <div> bestAskBTCUSDT:: {bestAskBTCUSDT ? bestAskBTCUSDT : data.rateAskETHBTC}</div>
-        <br />
-        <br />
-        <div> bestBidETHBTC:: {bestBidETHBTC ? bestBidETHBTC : data.rateBidETHBTC}</div>
-        <br />
-        <br />
-        <div> bestAskETHBTC:: {bestAskETHBTC ? bestAskETHBTC : data.rateAskETHBTC} </div>
-        <br />
-        <br />
-        <div> bestBidETHUSDT:: {bestBidETHUSDT ? bestBidETHUSDT : data.rateBidETHUSDT}</div>
-        <br />
-        <br />
-        <div> bestAskETHUSDT:: {bestAskETHUSDT ? bestAskETHUSDT : data.rateAskETHUSDT}</div>
-        <br />
-        <br />
-        <h1>Detect triangle arbitrage opportunities - Logs</h1>
-        <dir>
-          {profitRate?.map((item, index) => (
-            <div key={index}>{item}</div>
-          ))}
-        </dir>
+  function formatRate(rate, decimal) {
+    return Number(rate).toFixed(decimal);
+  }
 
-        <ul>
-          {/* {data.logs?.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))} */}
-        </ul>
+  return (
+    <div>
+      <div className="center">
+        <Container>
+          <Row className="justify-content-md-center row">
+            <Col xs lg="3" className="align-right">
+              {' '}
+              <Button variant="primary">USDT</Button>
+            </Col>
+            <Col xs={2}>ask: {formatRate(bestAskBTCUSDT, 2)}</Col>
+            <Col xs={1}>bid:{formatRate(bestBidBTCUSDT, 2)}</Col>
+            <Col xs lg="3">
+              <Button variant="success">BTC</Button>
+            </Col>
+          </Row>
+          <Row className="justify-content-md-center row">
+            <Col xs lg="3" className="align-right">
+              {' '}
+              <Button variant="success">BTC</Button>
+            </Col>
+            <Col xs={2}>ask: {formatRate(bestAskETHBTC, 6)}</Col>
+            <Col xs={1}>bid:{formatRate(bestBidETHBTC, 6)}</Col>
+            <Col xs lg="3">
+              <Button variant="warning">ETH</Button>
+            </Col>
+          </Row>
+          <Row className="justify-content-md-center row">
+            <Col xs lg="3" className="align-right">
+              {' '}
+              <Button variant="warning">ETH</Button>
+            </Col>
+            <Col xs={2}>ask: {formatRate(bestAskETHUSDT, 2)}</Col>
+            <Col xs={1}>bid:{formatRate(bestBidETHUSDT, 2)}</Col>
+            <Col xs lg="3">
+              <Button variant="primary">USDT</Button>
+            </Col>
+          </Row>
+        </Container>
+        {/* <div>bestBidBTCUSDT:: {formatRate(bestBidBTCUSDT, 2)}</div>
+
+        <div> bestAskBTCUSDT:: {formatRate(bestAskBTCUSDT, 2)}</div>
+
+        <div> bestBidETHBTC:: {formatRate(bestBidETHBTC, 6)}</div>
+
+        <div> bestAskETHBTC:: {formatRate(bestAskETHBTC, 6)} </div>
+
+        <div> bestBidETHUSDT:: {formatRate(bestBidETHUSDT, 2)}</div>
+
+        <div> bestAskETHUSDT:: {formatRate(bestAskETHUSDT, 2)}</div> */}
       </div>
+
+      <Card className="log" style={{ width: '65%', margin: '0 auto' }}>
+        <Card.Header className="header__card">
+          <div>UTC Time: {time.toUTCString()}</div>
+          Detect triangle arbitrage opportunities - Profit Rate greater than 1
+        </Card.Header>
+        <ListGroup variant="flush">
+          {profitRate?.map((item, index) => (
+            <ListGroup.Item key={index}> {item}</ListGroup.Item>
+          ))}
+        </ListGroup>
+      </Card>
     </div>
-    // <div class="triangle">
-    //   <div class="usdt">USDT</div>
-    //   <div class="btc">BTC</div>
-    //   <div class="eth">ETH</div>
-    //   <div class="currency1">
-    //     <span>$1000</span>
-    //   </div>
-    //   <div class="currency2">
-    //     <span>$2000</span>
-    //   </div>
-    //   <div class="vector1"></div>
-    //   <div class="vector2"></div>
-    //   <div class="vector3"></div>
-    //   <div class="vector4"></div>
-    //   <div class="vector5"></div>
-    //   <div class="vector6"></div>
-    // </div>
   );
 }
 
