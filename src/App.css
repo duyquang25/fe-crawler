@@ -8,8 +8,9 @@
   width: 100%;
   display: flex;
   justify-content: center;
+  margin: 0px auto;
   align-items: center;
-  padding: 20px 0;
+  padding: 10px 0;
 }
 
 .row {
@@ -19,4 +20,14 @@
 
 .align-right {
   text-align: right;
+}
+
+.margin-left {
+  margin-left: 10px;
+}
+
+.rate {
+  pointer-events: none;
+  /* width: 140px; */
+  font-size: 14px;
 }

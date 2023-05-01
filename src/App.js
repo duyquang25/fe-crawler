@@ -8,6 +8,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
 const host = 'http://13.215.193.102:9000';
 const endPointApi = 'http://13.215.193.102:9000/api/v1/profit-log';
@@ -102,52 +103,40 @@ function App() {
   return (
     <div>
       <div className="center">
-        <Container>
-          <Row className="justify-content-md-center row">
-            <Col xs lg="3" className="align-right">
-              {' '}
-              <Button variant="primary">USDT</Button>
-            </Col>
-            <Col xs={2}>ask: {formatRate(bestAskBTCUSDT, 2)}</Col>
-            <Col xs={1}>bid:{formatRate(bestBidBTCUSDT, 2)}</Col>
-            <Col xs lg="3">
-              <Button variant="success">BTC</Button>
-            </Col>
-          </Row>
-          <Row className="justify-content-md-center row">
-            <Col xs lg="3" className="align-right">
-              {' '}
-              <Button variant="success">BTC</Button>
-            </Col>
-            <Col xs={2}>ask: {formatRate(bestAskETHBTC, 6)}</Col>
-            <Col xs={1}>bid:{formatRate(bestBidETHBTC, 6)}</Col>
-            <Col xs lg="3">
-              <Button variant="warning">ETH</Button>
-            </Col>
-          </Row>
-          <Row className="justify-content-md-center row">
-            <Col xs lg="3" className="align-right">
-              {' '}
-              <Button variant="warning">ETH</Button>
-            </Col>
-            <Col xs={2}>ask: {formatRate(bestAskETHUSDT, 2)}</Col>
-            <Col xs={1}>bid:{formatRate(bestBidETHUSDT, 2)}</Col>
-            <Col xs lg="3">
-              <Button variant="primary">USDT</Button>
-            </Col>
-          </Row>
-        </Container>
-        {/* <div>bestBidBTCUSDT:: {formatRate(bestBidBTCUSDT, 2)}</div>
-
-        <div> bestAskBTCUSDT:: {formatRate(bestAskBTCUSDT, 2)}</div>
-
-        <div> bestBidETHBTC:: {formatRate(bestBidETHBTC, 6)}</div>
-
-        <div> bestAskETHBTC:: {formatRate(bestAskETHBTC, 6)} </div>
-
-        <div> bestBidETHUSDT:: {formatRate(bestBidETHUSDT, 2)}</div>
-
-        <div> bestAskETHUSDT:: {formatRate(bestAskETHUSDT, 2)}</div> */}
+        <ButtonGroup className="bt-group" aria-label="Basic example">
+          <Button variant="primary">USDT</Button>
+          <Button variant="light" className="rate">
+            ask: {formatRate(bestAskBTCUSDT, 2)}
+          </Button>
+          <Button variant="light" className="rate">
+            bid: {formatRate(bestBidBTCUSDT, 2)}
+          </Button>
+          <Button variant="success">BTC </Button>
+        </ButtonGroup>
+      </div>
+      <div className="center">
+        <ButtonGroup className="bt-group">
+          <Button variant="success">BTC </Button>
+          <Button variant="light" className="rate">
+            ask: {formatRate(bestAskETHBTC, 6)}
+          </Button>
+          <Button variant="light" className="rate">
+            bid: {formatRate(bestBidETHBTC, 6)}
+          </Button>
+          <Button variant="warning">ETH </Button>
+        </ButtonGroup>
+      </div>
+      <div className="center">
+        <ButtonGroup className="bt-group" aria-label="Basic example">
+          <Button variant="warning">ETH </Button>
+          <Button variant="light" className="rate">
+            ask: {formatRate(bestAskETHUSDT, 3)}
+          </Button>
+          <Button variant="light" className="rate">
+            bid: {formatRate(bestBidETHUSDT, 3)}
+          </Button>
+          <Button variant="primary">USDT</Button>
+        </ButtonGroup>
       </div>
 
       <Card className="log" style={{ width: '65%', margin: '0 auto' }}>
